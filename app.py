@@ -3,6 +3,7 @@ Stakeholder Deck Builder — generate persona-specific briefing PDFs for every
 member of a healthcare buying committee, from a single form.
 """
 
+import os
 import streamlit as st
 from scanner.deck_builder import generate_brief, generate_all_zip, _calc_roi, PERSONAS, STATE_LAWS
 
@@ -12,6 +13,51 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# ── Password gate ─────────────────────────────────────────────────────────────
+_APP_PASSWORD = os.environ.get("APP_PASSWORD", "freshpaint")
+
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+    html, body, [class*="css"] { background-color: #05080F !important; color: #E8EDF5 !important; }
+    .stApp { background: #05080F; }
+    #MainMenu, header[data-testid="stHeader"], footer { display: none !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    col = st.columns([1, 1.2, 1])[1]
+    with col:
+        st.markdown("<div style='height:12vh'></div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div style='font-family:Syne,sans-serif;font-size:0.65rem;font-weight:700;"
+            "letter-spacing:0.3em;text-transform:uppercase;color:rgba(0,255,178,0.6);"
+            "text-align:center;margin-bottom:0.5rem'>Freshpaint</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "<div style='font-family:Syne,sans-serif;font-size:1.8rem;font-weight:800;"
+            "text-align:center;color:#E8EDF5;margin-bottom:0.25rem'>Stakeholder Deck Builder</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "<div style='font-family:IBM Plex Mono,monospace;font-size:0.75rem;"
+            "text-align:center;color:rgba(232,237,245,0.35);margin-bottom:2rem'>Enter access password</div>",
+            unsafe_allow_html=True,
+        )
+        pwd = st.text_input("Password", type="password", label_visibility="collapsed",
+                            placeholder="Enter password…")
+        if st.button("→  Continue", use_container_width=True):
+            if pwd == _APP_PASSWORD:
+                st.session_state["authenticated"] = True
+                st.rerun()
+            else:
+                st.error("Incorrect password.")
+    st.stop()
 
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
