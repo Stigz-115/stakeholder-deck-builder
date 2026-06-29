@@ -14,6 +14,20 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# Suppress Streamlit Cloud's injected sidebar nav and collapse toggle globally
+st.markdown("""
+<style>
+div[data-testid="stSidebarNav"],
+section[data-testid="stSidebar"] nav,
+button[data-testid="collapsedControl"],
+button[data-testid="stSidebarCollapseButton"],
+button[aria-label="Close sidebar"],
+button[aria-label="Collapse sidebar"],
+button[aria-label="open sidebar"] { display: none !important; }
+section[data-testid="stSidebar"] { display: none !important; }
+</style>
+""", unsafe_allow_html=True)
+
 # ── Password gate ─────────────────────────────────────────────────────────────
 _APP_PASSWORD = os.environ.get("APP_PASSWORD", "freshpaint")
 
